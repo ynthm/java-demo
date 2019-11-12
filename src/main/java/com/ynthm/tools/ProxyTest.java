@@ -1,4 +1,4 @@
-package com.ynthm.test;
+package com.ynthm.tools;
 
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
