@@ -1,19 +1,11 @@
-package com.ynthm.tools;
+package com.ynthm.tools.domain;
 
 /**
  * Author : Ynthm
  */
 public class User {
-    private int id;
     private String name;
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
+    private int age;
 
     public String getName() {
         return name;
@@ -21,5 +13,13 @@ public class User {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
     }
 }

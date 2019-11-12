@@ -1,5 +1,7 @@
 package com.ynthm.tools;
 
+import com.ynthm.tools.domain.User;
+
 /**
  * Author : Ynthm
  */

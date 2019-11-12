@@ -1,5 +1,6 @@
 package com.ynthm.tools;
 
+import com.ynthm.tools.domain.User;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
