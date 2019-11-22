@@ -1,25 +1,28 @@
 package com.ynthm.tools.domain;
 
+import lombok.Data;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+
 /**
  * Author : Ynthm
  */
+@Data
+@ToString
+@SuperBuilder
 public class User {
+    private int id;
     private String name;
     private int age;
+    private Role role;
 
-    public String getName() {
-        return name;
+    public User() {
+
     }
 
-    public void setName(String name) {
+    public User(int id, String name, int age) {
+        this.id = id;
         this.name = name;
-    }
-
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
+        this.id = id;
     }
 }

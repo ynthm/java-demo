@@ -60,6 +60,8 @@ public class CompletableFutureTest {
             });
         }
         System.out.println("333333");
+
+
         result.entrySet().stream().sorted((item1, item2) -> item2.getValue() - item1.getValue()
         ).limit(3).forEach(
                 item -> {
@@ -67,6 +69,8 @@ public class CompletableFutureTest {
                     System.out.println(item.getValue());
                 }
         );
+
+
 
         THREAD_POOL.shutdown();
     }
