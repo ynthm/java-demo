@@ -11,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.ForkJoinPool;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -397,7 +398,7 @@ public class StreamTest {
     }
 
     @Test
-    void groupByAge(){
+    void groupByAge() {
         Map<Integer, List<User>> children = Stream.generate(new UserSupplier())
                 .limit(100)
                 .collect(Collectors.groupingByConcurrent(User::getAge));
@@ -410,11 +411,24 @@ public class StreamTest {
     }
 
     @Test
-    void partitioningBy(){
+    void partitioningBy() {
         Map<Boolean, List<User>> children = Stream.generate(new UserSupplier())
                 .limit(100)
                 .collect(Collectors.partitioningBy(p -> p.getAge() > 18));
         System.out.println("Children number:" + children.get(false).size());
         System.out.println("Adult number:" + children.get(true).size());
+    }
+
+    @Test
+    void parallel() {
+        // 获取当前机器CPU处理器的数量
+        System.out.println(Runtime.getRuntime().availableProcessors());// 输出 4
+        // parallelStream 默认的并发线程数
+        System.out.println(ForkJoinPool.getCommonPoolParallelism());// 输出 3
+
+
+        IntStream intStream = IntStream.rangeClosed(1, 1000);
+        ArrayList<Integer> collect = intStream.parallel().collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
+        System.out.println(collect.size());
     }
 }
