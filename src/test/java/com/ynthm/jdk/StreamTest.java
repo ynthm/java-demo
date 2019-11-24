@@ -1,5 +1,6 @@
 package com.ynthm.jdk;
 
+import com.ynthm.tools.cmp.SplitIteratorThread;
 import com.ynthm.tools.domain.Author;
 import com.ynthm.tools.domain.User;
 import org.apache.commons.lang3.StringUtils;
@@ -12,6 +13,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ForkJoinPool;
+import java.util.function.Consumer;
+import java.util.function.IntConsumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -428,7 +431,91 @@ public class StreamTest {
 
 
         IntStream intStream = IntStream.rangeClosed(1, 1000);
+        // 第一个参数返回结果的容器，第二个参数流中的项对容器的操作，第三个参数是并行多个中间结果合并的操作。
         ArrayList<Integer> collect = intStream.parallel().collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
         System.out.println(collect.size());
+    }
+
+    @Test
+    void iterator() {
+        // Create an array list for doubles.
+        ArrayList<Integer> al = new ArrayList<>();
+
+        // Add values to the array list.
+        al.add(1);
+        al.add(2);
+        al.add(-3);
+        al.add(-3);
+        al.add(-4);
+        al.add(5);
+
+        Stream<Integer> str1 = al.stream();
+        Spliterator<Integer> splitr1 = str1.spliterator();
+        System.out.println(splitr1.characteristics());
+        //结合hasNext和next方法
+        splitr1.tryAdvance((a) -> System.out.println(a + "!"));
+
+        // trySplit()  将剩余元素分成两部分，取出第一部分
+        Spliterator<Integer> splitr2 = splitr1.trySplit();
+        // estimateSize 函数获取剩余还没有进行accept操作的元素的数量
+        System.out.println(splitr2.estimateSize());
+
+        Consumer<Integer> action = System.out::println;
+
+        Consumer<Integer> hello = action.andThen((a) -> {
+            System.out.println("hello");
+        });
+        splitr2.forEachRemaining(hello);
+
+        System.out.println();
+        splitr1.forEachRemaining(action);
+    }
+
+    /**
+     * 并行迭代器
+     */
+    @Test
+    void iterator1() {
+        int[] arr = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+        // 第二个参数指向数组的起始下标（包括,0开始），第三个参数指向原数组的结束下标（不包括）
+        Spliterator.OfInt sInt = Arrays.spliterator(arr, 2, 5);
+        IntConsumer consumer = System.out::println;
+        sInt.tryAdvance(consumer);
+        sInt.tryAdvance(consumer);
+        sInt.tryAdvance(consumer);
+        sInt.tryAdvance(consumer);
+        sInt.tryAdvance(consumer);
+    }
+
+    @Test
+    void ttt() {
+        int[] arr = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+        Spliterator<Integer> spliterator0 = Arrays.spliterator(arr);
+        Spliterator<Integer> spliterator1 = spliterator0.trySplit();
+        Spliterator<Integer> spliterator2 = spliterator1.trySplit();
+
+        System.out.println(spliterator0.getExactSizeIfKnown());
+        System.out.println(spliterator1.getExactSizeIfKnown());
+        System.out.println(spliterator2.getExactSizeIfKnown());
+
+        System.out.println(spliterator0.estimateSize());
+        System.out.println(spliterator1.estimateSize());
+        System.out.println(spliterator2.estimateSize());
+
+
+        Thread t0 = new SplitIteratorThread<>(spliterator0);
+        t0.setName("t0");
+
+        Thread t1 = new SplitIteratorThread<>(spliterator1);
+        t1.setName("t1");
+
+        Thread t2 = new SplitIteratorThread<>(spliterator2);
+        t2.setName("t2");
+
+        t0.start();
+        t1.start();
+        t2.start();
+
+
     }
 }

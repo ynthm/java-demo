@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.*;
 
 public abstract class Tuple implements Iterable<Object>, Serializable, Comparable<Tuple> {
-    private static final long serialVersionUID = 5431085632328343101L;
+    private static final long serialVersionUID = 1;
     private final Object[] valueArray;
     private final List<Object> valueList;
 

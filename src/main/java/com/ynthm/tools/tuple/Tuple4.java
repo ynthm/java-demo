@@ -4,7 +4,8 @@ import java.util.Spliterator;
 import java.util.function.Consumer;
 
 public final class Tuple4<A, B, C, D> extends Tuple implements IValue0<A>, IValue1<B>, IValue2<C>, IValue3<D> {
-    private static final long serialVersionUID = 2445136048617019549L;
+
+    private static final long serialVersionUID = 1;
     private static final int SIZE = 4;
     private final A val0;
     private final B val1;
@@ -25,7 +26,7 @@ public final class Tuple4<A, B, C, D> extends Tuple implements IValue0<A>, IValu
 
     @Override
     public int getSize() {
-        return 4;
+        return SIZE;
     }
 
     @Override
