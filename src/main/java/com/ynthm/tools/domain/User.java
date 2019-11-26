@@ -1,14 +1,13 @@
 package com.ynthm.tools.domain;
 
 import lombok.Data;
-import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 /**
  * Author : Ynthm
  */
+
 @Data
-@ToString
 @SuperBuilder
 public class User {
     private int id;

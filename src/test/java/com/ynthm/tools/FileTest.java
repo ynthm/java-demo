@@ -49,6 +49,7 @@ public class FileTest {
         Files.copy(path, path2);
     }
 
+    @Order(4)
     @Test
     void traverseDirectory() throws IOException {
         Path dir = Paths.get("/Users/ethan/hello/");
@@ -57,9 +58,9 @@ public class FileTest {
             System.out.println(item.getFileName());
         });
 
-
     }
 
+    @Order(5)
     @Test
     void fileProperties() throws IOException {
         Path path = Paths.get("/Users/ethan/hello/hello.txt");
@@ -71,6 +72,7 @@ public class FileTest {
 
     }
 
+    @Order(6)
     @Test
     void getResources() throws IOException {
         // 必须带/
@@ -82,10 +84,14 @@ public class FileTest {
 
     }
 
+    @Order(10)
     @Test
     void delete() throws IOException {
         Path path = Paths.get("/Users/ethan/hello/hello.txt");
         Files.deleteIfExists(path);
+
+        Path path2 = Paths.get("/Users/ethan/hello/world.txt");
+        Files.deleteIfExists(path2);
 
         // 只有空文件夹才能删除
         Path dir = Paths.get("/Users/ethan/hello");

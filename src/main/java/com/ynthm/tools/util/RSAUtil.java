@@ -1,27 +1,14 @@
 package com.ynthm.tools.util;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.security.InvalidKeyException;
-import java.security.Key;
-import java.security.KeyFactory;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.security.SecureRandom;
-import java.security.Security;
-import java.security.Signature;
-import java.security.SignatureException;
-import java.security.UnrecoverableKeyException;
+import org.apache.commons.io.IOUtils;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.crypto.*;
+import javax.crypto.spec.SecretKeySpec;
+import java.io.*;
+import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
@@ -33,14 +20,6 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 import java.util.Enumeration;
 import java.util.Objects;
-
-import javax.crypto.*;
-import javax.crypto.spec.SecretKeySpec;
-
-import org.apache.commons.io.IOUtils;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author ETHAN WANG
@@ -362,43 +341,13 @@ public class RSAUtil {
         return verified;
     }
 
-
     /**
-     * 生成key，作为加密和解密密钥且只有密钥相同解密加密才会成功
-     *
-     * @return
-     */
-    public static Key getAesKey() {
-
-        try {
-            // 生成key
-            KeyGenerator keyGenerator;
-            //构造密钥生成器，指定为AES算法,不区分大小写
-            keyGenerator = KeyGenerator.getInstance(KEY_ALGORITHM_AES);
-            //生成一个128位的随机源,根据传入的字节数组
-            keyGenerator.init(128);
-            //产生原始对称密钥
-            SecretKey secretKey = keyGenerator.generateKey();
-            //获得原始对称密钥的字节数组
-            byte[] keyBytes = secretKey.getEncoded();
-            // key转换,根据字节数组生成AES密钥
-            Key key = new SecretKeySpec(keyBytes, KEY_ALGORITHM_AES);
-
-            return key;
-        } catch (NoSuchAlgorithmException e) {
-            LOGGER.error("no such algorithm exception.", e);
-            return null;
-        }
-    }
-
-    /**
-     * 生成加密秘钥
+     * 密码生成加密秘钥 作为加密和解密密钥且只有密钥相同解密加密才会成功
      *
      * @return
      */
     public static Key getAesKey(final String key) {
         Objects.requireNonNull(key);
-
         try {
             // 构造密钥生成器 指定为AES算法 不区分大小写
             KeyGenerator kg = KeyGenerator.getInstance(KEY_ALGORITHM_AES);
