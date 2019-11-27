@@ -7,9 +7,10 @@ import org.slf4j.LoggerFactory;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.*;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 public class SecureHashUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(SecureHashUtil.class);
@@ -83,7 +84,7 @@ public class SecureHashUtil {
             return digest.substring(8, 24);
         }
 
-        return null;
+        return digest;
     }
 
     public static String md5(String input, byte[] salt) {
@@ -133,7 +134,24 @@ public class SecureHashUtil {
         Mac mac = Mac.getInstance(ALGORITHM_HMACSHA256);
         mac.init(signingKey);
         return byte2hex(mac.doFinal(data)).toLowerCase();
+    }
 
+    /**
+     * 将普通字符串转换成application/x-www-form-urlencoded MIME字符串
+     *
+     * @return
+     */
+    public static String urlEncode(String str) throws UnsupportedEncodingException {
+        return URLEncoder.encode(str, StandardCharsets.UTF_8.name());
+    }
+
+    /**
+     * 将application/x-www-form-urlencoded MIME字符串转换成普通字符串
+     *
+     * @return
+     */
+    public static String urlDecoder(String str) throws UnsupportedEncodingException {
+        return URLDecoder.decode(str, StandardCharsets.UTF_8.name());
     }
 
     private static String digest(String algorithm, String input) {

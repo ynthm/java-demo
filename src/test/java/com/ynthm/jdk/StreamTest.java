@@ -175,7 +175,7 @@ public class StreamTest {
     }
 
     @Test
-    void pickAllWords() {
+    void readFilePickAllWords() {
         Path path = Paths.get(System.getProperty("user.dir")
                 + "/src/test/java/com/ynthm/jdk/FloatTest.java");
 
@@ -255,12 +255,12 @@ public class StreamTest {
     }
 
     @Test
-    void findLongestLine() {
+    void readFileFindLongestLine() {
         Path path = Paths.get(System.getProperty("user.dir")
                 + "/src/test/java/com/ynthm/jdk/FloatTest.java");
 
         // 1. Java 8 Read File + Stream
-        try (Stream<String> stream = Files.lines(path)) {
+        try (Stream<String> stream = Files.lines(path).onClose(() -> System.out.println("File closed"))) {
             int output = stream
                     .mapToInt(String::length)
                     .max()
@@ -341,6 +341,50 @@ public class StreamTest {
         System.out.println(concat);
     }
 
+    /**
+     * streams of primitives. 直接 collect 会报错
+     */
+    @Test
+    void boxed() {
+
+        List<Integer> ints = IntStream.of(1, 2, 3, 4, 5)
+                .boxed()
+                .collect(Collectors.toList());
+
+        System.out.println(ints);
+
+        List<Integer> ints1 = IntStream.of(1, 2, 3, 4, 5)
+                .mapToObj(Integer::valueOf)
+                .collect(Collectors.toList());
+
+        System.out.println(ints1);
+
+        int[] intArray = IntStream.of(1, 2, 3, 4, 5).toArray();
+
+        System.out.println(Arrays.toString(intArray));
+
+        Optional<Integer> max = IntStream.of(1, 2, 3, 4, 5)
+                .boxed()
+                .max(Integer::compareTo);
+
+        System.out.println(max);
+    }
+
+    @Test
+    void joining() {
+        List<String> words = Arrays.asList("A", "B", "C", "D");
+
+        String joinedString = words.stream().collect(Collectors.joining());      //ABCD
+        System.out.println(joinedString);
+
+        joinedString = words.stream().collect(Collectors.joining(","));      //A,B,C,D
+        System.out.println(joinedString);
+        System.out.println(String.join(",", words));
+
+        joinedString = words.stream().collect(Collectors.joining(",", "{", "}"));    //{A,B,C,D}
+        System.out.println(joinedString);
+    }
+
     @Test
     void match() {
         List<User> users = new ArrayList<>();
@@ -398,6 +442,24 @@ public class StreamTest {
         System.out.println();
         Stream.iterate(4, n -> n + 3)
                 .limit(10).forEach(x -> System.out.print(x + " "));
+
+    }
+
+    @Test
+    void toArray() {
+
+        Stream<String> tokenStream = Arrays.asList("A", "B", "C", "D").stream();  //stream
+
+        String[] tokenArray = tokenStream.toArray(String[]::new);   //array
+
+        System.out.println(Arrays.toString(tokenArray));
+
+        IntStream infiniteNumberStream = IntStream.iterate(1, i -> i + 1);
+
+        int[] intArray = infiniteNumberStream.limit(10)
+                .toArray();
+
+        System.out.println(Arrays.toString(intArray));
     }
 
     @Test
@@ -470,6 +532,7 @@ public class StreamTest {
         System.out.println();
         splitr1.forEachRemaining(action);
     }
+
 
     /**
      * 并行迭代器
