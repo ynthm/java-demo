@@ -1,17 +1,27 @@
 package com.ynthm.tools.util;
 
 import org.apache.commons.lang3.StringUtils;
+import org.bouncycastle.crypto.generators.BCrypt;
+import org.bouncycastle.crypto.generators.SCrypt;
+import org.bouncycastle.util.encoders.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.crypto.Mac;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
+import java.security.spec.InvalidKeySpecException;
 
+/**
+ * 为了保护用户的明文密码不被泄露，一般会对密码进行单向不可逆加密——哈希。
+ */
 public class SecureHashUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(SecureHashUtil.class);
 
@@ -37,6 +47,8 @@ public class SecureHashUtil {
     private static final String ALGORITHM_HMACSHA256 = "HmacSHA256";
 
     public static final String ALGORITHM_SHA1PRNG = "SHA1PRNG";
+
+    public static final String ALGORITHM_PBKDF2 = "PBKDF2WithHmacSHA1";
 
     public static String sha1(String input) {
         return digest(ALGORITHM_SHA1, input);
@@ -115,6 +127,17 @@ public class SecureHashUtil {
         return salt;
     }
 
+    public static byte[] getSalt(int length) throws NoSuchAlgorithmException, NoSuchProviderException {
+        //Always use a SecureRandom generator
+        SecureRandom sr = SecureRandom.getInstance(ALGORITHM_SHA1PRNG, "SUN");
+        //Create array for salt
+        byte[] salt = new byte[length];
+        //Get a random salt
+        sr.nextBytes(salt);
+        //return salt
+        return salt;
+    }
+
     public static String hmacSHA256(String data, String key) {
         try {
             return hmacSHA256(data.getBytes(CHARSET), key.getBytes(CHARSET));
@@ -135,6 +158,80 @@ public class SecureHashUtil {
         mac.init(signingKey);
         return byte2hex(mac.doFinal(data)).toLowerCase();
     }
+
+    /**
+     * 目的是使散列函数足够慢以阻止攻击，但又要足够快以至于不会对用户造成明显的延迟。
+     *
+     * @param input
+     * @param salt
+     * @return
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidKeySpecException
+     */
+    public static String hmacsha1PBKDF2(String input, byte[] salt) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        int iterations = 1000;
+        char[] chars = input.toCharArray();
+
+        PBEKeySpec spec = new PBEKeySpec(chars, salt, iterations, 64 * 8);
+        SecretKeyFactory skf = SecretKeyFactory.getInstance(ALGORITHM_PBKDF2);
+        byte[] hash = skf.generateSecret(spec).getEncoded();
+        return iterations + ":" + toHex(salt) + ":" + toHex(hash);
+    }
+
+    public static boolean validatePBKDF2WithHmacSHA1(String originalPassword, String storedPassword) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        String[] parts = storedPassword.split(":");
+        int iterations = Integer.parseInt(parts[0]);
+        byte[] salt = fromHex(parts[1]);
+        byte[] hash = fromHex(parts[2]);
+
+        PBEKeySpec spec = new PBEKeySpec(originalPassword.toCharArray(), salt, iterations, hash.length * 8);
+        SecretKeyFactory skf = SecretKeyFactory.getInstance(ALGORITHM_PBKDF2);
+        byte[] testHash = skf.generateSecret(spec).getEncoded();
+
+        int diff = hash.length ^ testHash.length;
+        for (int i = 0; i < hash.length && i < testHash.length; i++) {
+            diff |= hash[i] ^ testHash[i];
+        }
+        return diff == 0;
+    }
+
+    /**
+     * password - the password bytes (up to 72 bytes) to use for this invocation.
+     * salt - the 128 bit salt to use for this invocation.
+     * cost - the bcrypt cost parameter. The cost of the bcrypt function grows as 2^cost. Legal values are 4..31 inclusive.
+     *
+     * @param password
+     * @param salt
+     * @return
+     * @throws UnsupportedEncodingException
+     */
+
+    public static String bCrypt(String password, byte[] salt) throws UnsupportedEncodingException {
+
+        byte[] generate = BCrypt.generate(password.getBytes(StandardCharsets.UTF_8.name()), salt, 4);
+        return Hex.toHexString(generate);
+    }
+
+    /**
+     * Scrypt算法的核心思想是“哈希计算需要更大的内存空间和时长”。
+     * P - the bytes of the pass phrase.
+     * S - the salt to use for this invocation.
+     * N - CPU/Memory cost parameter. Must be larger than 1, a power of 2 and less than 2^(128 * r / 8).
+     * r - the block size, must be >= 1.
+     * p - Parallelization parameter. Must be a positive integer less than or equal to Integer.MAX_VALUE / (128 * r * 8).
+     * dkLen - the length of the key to generate.
+     *
+     * @param password
+     * @param salt
+     * @return
+     * @throws UnsupportedEncodingException
+     */
+    public static String sCrypt(String password, byte[] salt) throws UnsupportedEncodingException {
+
+        byte[] generate = SCrypt.generate(password.getBytes(StandardCharsets.UTF_8.name()), salt, 16384, 8, 8, 32);
+        return Hex.toHexString(generate);
+    }
+
 
     /**
      * 将普通字符串转换成application/x-www-form-urlencoded MIME字符串
@@ -204,4 +301,31 @@ public class SecureHashUtil {
         }
         return hex.toString();
     }
+
+    private static String toHex(byte[] array) {
+        BigInteger bi = new BigInteger(1, array);
+        String hex = bi.toString(16);
+        int paddingLength = (array.length * 2) - hex.length();
+        if (paddingLength > 0) {
+            return String.format("%0" + paddingLength + "d", 0) + hex;
+        } else {
+            return hex;
+        }
+    }
+
+    /**
+     * 十六进制字符串转 byte[]
+     *
+     * @param hex
+     * @return
+     * @throws NoSuchAlgorithmException
+     */
+    private static byte[] fromHex(String hex) throws NoSuchAlgorithmException {
+        byte[] bytes = new byte[hex.length() / 2];
+        for (int i = 0; i < bytes.length; i++) {
+            bytes[i] = (byte) Integer.parseInt(hex.substring(2 * i, 2 * i + 2), 16);
+        }
+        return bytes;
+    }
+
 }
