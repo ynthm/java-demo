@@ -81,8 +81,6 @@ public class SecureHashUtil {
      *
      * @param input
      * @return
-     * @throws UnsupportedEncodingException
-     * @throws NoSuchAlgorithmException
      */
     public static String md5(String input) {
         return md5(input, 32);
