@@ -8,6 +8,8 @@ import java.util.List;
 
 /**
  * https://www.tutorialspoint.com/guava/guava_ints.htm
+ * https://github.com/google/guava/wiki
+ * https://github.com/google/guava/tree/master/guava-tests
  */
 public class PrimitiveTest {
 
