@@ -2,7 +2,7 @@ package com.ynthm.algorithm.sort;
 
 /** 希尔排序 Author : Ynthm */
 public class ShellSort {
-  public static void shellSort(int[] array) {
+  public static void sort(int[] array) {
     int j;
     for (int gap = array.length / 2; gap > 0; gap /= 2) {
       // 定义一个增长序列，即分割数组的增量,d1=N/2   dk=(d(k-1))/2

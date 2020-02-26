@@ -8,11 +8,13 @@ public class HeapSort {
    * 参数说明：
    *     a -- 待排序的数组
    */
-  public static void heapSort(int[] a) {
+  public static void sort(int[] a) {
     int n = a.length;
     int i, tmp;
     // 从(n/2-1) --> 0逐次遍历。遍历之后，得到的数组实际上是一个(最大)二叉堆。
-    for (i = n / 2 - 1; i >= 0; i--) maxHeapDown(a, i, n - 1);
+    for (i = n / 2 - 1; i >= 0; i--) {
+      maxHeapDown(a, i, n - 1);
+    }
     // 从最后一个元素开始对序列进行调整，不断的缩小调整的范围直到第一个元素
     for (i = n - 1; i > 0; i--) {
       // 交换a[0]和a[i]。交换后，a[i]是a[0...i]中最大的。

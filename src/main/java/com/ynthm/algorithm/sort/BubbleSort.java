@@ -1,7 +1,5 @@
 package com.ynthm.algorithm.sort;
 
-import java.util.Arrays;
-
 /** Author : Ynthm */
 public class BubbleSort {
 
@@ -17,57 +15,28 @@ public class BubbleSort {
       for (int j = 0; j < length - 1 - i; j++) {
         if (array[j] > array[j + 1]) {
           // 交换数组array的j和j+1位置的数据
-          swap(array, j, j + 1);
+          SortHelper.swap(array, j, j + 1);
         }
       }
     }
   }
 
-  /**
-   * 交换数组array的i和j位置的数据
-   *
-   * @param array 数组
-   * @param i 下标i
-   * @param j 下标j
-   */
-  public static void swap(int[] array, int i, int j) {
-    int temp = array[i];
-    array[i] = array[j];
-    array[j] = temp;
-  }
+  public void sort1(int[] arr) {
 
-  /**
-   * 快速排序（挖坑法递归）
-   *
-   * @param arr 待排序数组
-   * @param low 左边界
-   * @param high 右边界
-   */
-  public static void sort(int arr[], int low, int high) {
-    if (arr == null || arr.length <= 0) {
-      return;
-    }
-    if (low >= high) {
-      return;
-    }
+    for (int i = 1; i < arr.length; i++) {
+      // 设定一个标记，若为true，则表示此次循环没有进行交换，也就是待排序列已经有序，排序已经完成。
+      boolean flag = true;
 
-    int left = low;
-    int right = high;
-    int temp = arr[left]; // 挖坑1：保存基准的值
-
-    while (left < right) {
-      while (left < right && arr[right] >= temp) {
-        right--;
+      for (int j = 0; j < arr.length - i; j++) {
+        if (arr[j] > arr[j + 1]) {
+          SortHelper.swap(arr, j, j + 1);
+          flag = false;
+        }
       }
-      arr[left] = arr[right]; // 坑2：从后向前找到比基准小的元素，插入到基准位置坑1中
-      while (left < right && arr[left] <= temp) {
-        left++;
+
+      if (flag) {
+        break;
       }
-      arr[right] = arr[left]; // 坑3：从前往后找到比基准大的元素，放到刚才挖的坑2中
     }
-    arr[left] = temp; // 基准值填补到坑3中，准备分治递归快排
-    System.out.println("Sorting: " + Arrays.toString(arr));
-    sort(arr, low, left - 1);
-    sort(arr, left + 1, high);
   }
 }

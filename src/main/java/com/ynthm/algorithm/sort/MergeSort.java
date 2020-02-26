@@ -14,7 +14,6 @@ public class MergeSort {
    * 超简单的合并函数
    */
   private static void merge(int[] array, int[] tmp, int leftPos, int rightPos, int rightEnd) {
-    // TODO Auto-generated method stub
     int leftEnd = rightPos - 1;
     int tmpPos = leftPos;
     int numElements = rightEnd - leftPos + 1;
@@ -36,7 +35,7 @@ public class MergeSort {
     }
   }
 
-  public static void mergeSort(int[] array) {
+  public static void sort(int[] array) {
     int[] tmp = new int[array.length]; // 声明一个用来合并的数组
     mergeSort(array, tmp, 0, array.length - 1); // 调用排序函数，传入数字的起点和终点
   }

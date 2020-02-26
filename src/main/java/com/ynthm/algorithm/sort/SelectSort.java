@@ -2,7 +2,7 @@ package com.ynthm.algorithm.sort;
 
 /** 选择排序 Author : Ynthm */
 public class SelectSort {
-  public static void selectSort(int[] array) {
+  public static void sort(int[] array) {
     for (int i = 0; i < array.length - 1; i++) {
       int min = array[i];
       int minindex = i;

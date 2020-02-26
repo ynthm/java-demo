@@ -11,7 +11,7 @@ public class QuickSort {
    * 枢轴采用三数中值分割法可以优化
    */
   // 递归快速排序
-  public static void quickSort(int a[]) {
+  public static void sort(int a[]) {
     qSort(a, 0, a.length - 1);
   }
   // 递归排序，利用两路划分

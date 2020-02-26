@@ -1,8 +1,8 @@
 package com.ynthm.algorithm.sort;
 
 /** 插入排序 Author : Ynthm */
-public class InserionSort {
-  public static void insertionSort(int[] array) {
+public class InsertionSort {
+  public static void sort(int[] array) {
     int tmp;
     for (int i = 1; i < array.length; i++) {
       tmp = array[i]; // 将当前位置的数给tmp
