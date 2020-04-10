@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.*;
+import java.util.Date;
 
 import static java.time.temporal.TemporalAdjusters.lastInMonth;
 import static java.time.temporal.TemporalAdjusters.nextOrSame;
@@ -254,6 +255,11 @@ public class TimeTest {
     // 字符串转日期
     LocalDate date2 = LocalDate.parse(str, format2);
     System.out.println("日期类型:" + date2);
+
+    LocalDateTime now = LocalDateTime.now();
+    DateTimeFormatter format3 = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+
+    System.out.println(now.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
   }
 
   /**
@@ -291,5 +297,28 @@ public class TimeTest {
             + d2.getSeconds()
             + "\td3: "
             + d3.getSeconds());
+
+    Instant inst1 = Instant.now();
+    System.out.println("Inst1 : " + inst1);
+    Instant inst2 = inst1.plus(Duration.ofSeconds(10));
+    System.out.println("Inst2 : " + inst2);
+
+    System.out.println(inst1.isBefore(inst2));
+
+    System.out.println("Difference in milliseconds : " + Duration.between(inst1, inst2).toMillis());
+
+    System.out.println("Difference in seconds : " + Duration.between(inst1, inst2).getSeconds());
+  }
+
+  @Test
+  void testInstantDate() {
+    Instant ins = Instant.now().minus(Duration.ofMinutes(60));
+
+    Date date1 = Date.from(ins);
+    System.out.println(date1);
+    System.out.println(new Date(ins.toEpochMilli()));
+
+    Date unlockDate = new Date(Instant.now().plusSeconds(60 * 60).toEpochMilli());
+    System.out.println(unlockDate);
   }
 }
