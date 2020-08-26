@@ -9,6 +9,7 @@ import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.*;
 import java.util.Date;
+import java.util.Locale;
 
 import static java.time.temporal.TemporalAdjusters.lastInMonth;
 import static java.time.temporal.TemporalAdjusters.nextOrSame;
@@ -167,7 +168,7 @@ public class TimeTest {
   }
 
   @Test
-  void period(){
+  void period() {
     // 获取自然周期今天周几
     LocalDate now = LocalDate.now();
     // 参数 4 正好是ISO
@@ -226,7 +227,7 @@ public class TimeTest {
   }
 
   @Test
-  void rightHour(){
+  void rightHour() {
     LocalDateTime now = LocalDateTime.now();
 
     System.out.println(now.minusHours(1).toLocalDate().atTime(now.minusHours(1).getHour(), 0, 0));
@@ -236,7 +237,6 @@ public class TimeTest {
 
     System.out.println(now.minusHours(1).toLocalDate().atTime(now.minusHours(1).getHour(), 0, 0));
     System.out.println(now.toLocalDate().atTime(now.getHour(), 0, 0));
-
   }
 
   @Test
@@ -367,19 +367,17 @@ public class TimeTest {
   }
 
   @Test
-  void testLocalDate(){
+  void testLocalDate() {
 
+    LocalDate localDate = LocalDate.now();
+    LocalDate anyDayOfLastMonth = localDate.minusMonths(1);
+    System.out.println(anyDayOfLastMonth.withDayOfMonth(1).atStartOfDay());
+    LocalDateTime localDateTime = localDate.withDayOfMonth(1).atStartOfDay();
+    System.out.println(localDateTime);
+    String abc = "" + 29 + '-' + localDateTime.getYear() + '-' + localDateTime.getMonthValue();
+    System.out.println(abc);
 
-
-      LocalDate localDate = LocalDate.now();
-      LocalDate anyDayOfLastMonth = localDate.minusMonths(1);
-      System.out.println(anyDayOfLastMonth.withDayOfMonth(1).atStartOfDay());
-      LocalDateTime localDateTime = localDate.withDayOfMonth(1).atStartOfDay();
-      System.out.println(localDateTime);
-      String abc = ""+ 29+ '-'+localDateTime.getYear()+'-'+localDateTime.getMonthValue();
-      System.out.println(abc);
-
-      LocalDateTime now = LocalDateTime.now();
+    LocalDateTime now = LocalDateTime.now();
     System.out.println(now);
     System.out.println(now.minusDays(10));
 
@@ -388,88 +386,103 @@ public class TimeTest {
     System.out.println(LocalDateTime.of(now.toLocalDate(), LocalTime.MIN).withDayOfMonth(1));
     System.out.println(now.withDayOfMonth(now.toLocalDate().lengthOfMonth()));
 
-    if (new BigDecimal(0.1).compareTo(new BigDecimal("0.2"))<0)
-    {
+    if (new BigDecimal(0.1).compareTo(new BigDecimal("0.2")) < 0) {
       System.out.println("haha");
     }
   }
 
   @Test
-  void tes111(){
+  void tes111() {
 
-    LocalDateTime now = LocalDateTime.of(LocalDate.now(),LocalTime.of(23,15,0));
+    LocalDateTime now = LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 15, 0));
     LocalDate localDate = now.toLocalDate();
 
     int minute = now.getMinute();
-    if (minute<15){
+    if (minute < 15) {
       System.out.println(localDate.atTime(now.minusHours(1).getHour(), 45, 0));
       System.out.println(localDate.atTime(now.getHour(), 0, 0));
-    }else if (minute<30){
+    } else if (minute < 30) {
       System.out.println(localDate.atTime(now.getHour(), 0, 0));
       System.out.println(localDate.atTime(now.getHour(), 15, 0));
-    }else if (minute<45){
+    } else if (minute < 45) {
       System.out.println(localDate.atTime(now.getHour(), 15, 0));
       System.out.println(localDate.atTime(now.getHour(), 30, 0));
-    }else {
+    } else {
       System.out.println(localDate.atTime(now.getHour(), 30, 0));
       System.out.println(localDate.atTime(now.getHour(), 45, 0));
     }
-
   }
 
   @Test
-  void test2(){
-      LocalDateTime now = LocalDateTime.now();
-      LocalDateTime endTime = LocalDateTime.of(now.toLocalDate(), LocalTime.of(now.getHour(), 0));
-      System.out.println(endTime);
-      System.out.println(endTime.toString());
-      System.out.println(DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(endTime));
+  void test2() {
+    LocalDateTime now = LocalDateTime.now();
+    LocalDateTime endTime = LocalDateTime.of(now.toLocalDate(), LocalTime.of(now.getHour(), 0));
+    System.out.println(endTime);
+    System.out.println(endTime.toString());
+    System.out.println(DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(endTime));
+
+    Instant ins = Instant.now().minus(Duration.ofMinutes(60));
+    Date startDate = new Date(ins.toEpochMilli());
+    Date date = new Date();
+
+    System.out.println(Locale.SIMPLIFIED_CHINESE.toLanguageTag());
+
+    if (startDate.before(date)) {
+      date = startDate;
+    }
   }
 
-  private void print(ZonedDateTime now){
+  private void print(ZonedDateTime now) {
     System.out.println("当前时间 --- " + now.toLocalDateTime());
     ZonedDateTime anyDayOfLastWeek = now.minusWeeks(1);
     ZoneId gmt8 = ZoneId.of("Asia/Shanghai");
     LocalDateTime startTime = anyDayOfLastWeek.with(DayOfWeek.MONDAY).toLocalDate().atStartOfDay();
     LocalDateTime endTime = now.with(DayOfWeek.MONDAY).toLocalDate().atStartOfDay();
-    System.out.println(startTime +" --- "+endTime);
+    System.out.println(startTime + " --- " + endTime);
 
-    ZonedDateTime utcStartTime = ZonedDateTime.of(startTime, gmt8).withZoneSameInstant(ZoneId.of("UTC"));
-    ZonedDateTime utcEndTime = ZonedDateTime.of(endTime, gmt8).withZoneSameInstant(ZoneId.of("UTC"));
-    System.out.println(utcStartTime +" --- "+utcEndTime);
+    ZonedDateTime utcStartTime =
+        ZonedDateTime.of(startTime, gmt8).withZoneSameInstant(ZoneId.of("UTC"));
+    ZonedDateTime utcEndTime =
+        ZonedDateTime.of(endTime, gmt8).withZoneSameInstant(ZoneId.of("UTC"));
+    System.out.println(utcStartTime + " --- " + utcEndTime);
   }
 
   /**
    * 2020-06-14T17:00
+   *
    * @param localDateTime UTC 时间
    */
-  private void print1 (LocalDateTime localDateTime){
+  private void print1(LocalDateTime localDateTime) {
     ZoneId gmt8 = ZoneId.of("Asia/Shanghai");
     ZoneId utc = ZoneId.of("UTC");
 
-    LocalDateTime localDateNow = transfer(localDateTime,utc,gmt8) ;
+    LocalDateTime localDateNow = transfer(localDateTime, utc, gmt8);
 
     LocalDateTime anyDayOfLastWeek = localDateNow.minusWeeks(1);
     LocalDateTime startTime = anyDayOfLastWeek.with(DayOfWeek.MONDAY).toLocalDate().atStartOfDay();
-    LocalDateTime endTime =localDateNow.with(DayOfWeek.MONDAY).toLocalDate().atStartOfDay();
-    System.out.println(startTime+" --- "+endTime);
+    LocalDateTime endTime = localDateNow.with(DayOfWeek.MONDAY).toLocalDate().atStartOfDay();
+    System.out.println(startTime + " --- " + endTime);
 
-    LocalDateTime utcStartTime = transfer(startTime,gmt8,utc);
-    LocalDateTime utcEndTime = transfer(endTime,gmt8,utc);
-    System.out.println(utcStartTime +" --- "+utcEndTime);
-
+    LocalDateTime utcStartTime = transfer(startTime, gmt8, utc);
+    LocalDateTime utcEndTime = transfer(endTime, gmt8, utc);
+    System.out.println(utcStartTime + " --- " + utcEndTime);
   }
 
-  private LocalDateTime transfer(LocalDateTime localDateTime, ZoneId at, ZoneId to){
+  private LocalDateTime transfer(LocalDateTime localDateTime, ZoneId at, ZoneId to) {
     ZonedDateTime of = ZonedDateTime.of(localDateTime, at);
     return of.withZoneSameInstant(to).toLocalDateTime();
   }
 
-
   @Test
-  void testTimezone(){
+  void testTimezone() {
     ZoneId gmt8 = ZoneId.of("Asia/Shanghai");
-    LocalDateTime localDateTime = LocalDateTime.of(2020,6,15,1,0,0);
+    LocalDateTime localDateTime = LocalDateTime.of(2020, 6, 15, 1, 0, 0);
+    LocalDateTime localDateTime1 =
+        ZonedDateTime.of(localDateTime, ZoneId.of("UTC"))
+            .withZoneSameInstant(gmt8)
+            .toLocalDateTime();
+    System.out.println(localDateTime);
+    System.out.println(localDateTime1);
     ZonedDateTime of = ZonedDateTime.of(localDateTime, gmt8);
     ZonedDateTime utc = of.withZoneSameInstant(ZoneId.of("UTC"));
     print(of);
@@ -477,14 +490,8 @@ public class TimeTest {
     print1(of.toLocalDateTime());
     print1(utc.toLocalDateTime());
 
-
-
-
-//    System.out.println(of.toLocalDateTime());
-//    System.out.println(utc.toLocalDateTime());
-
-
-
+    //    System.out.println(of.toLocalDateTime());
+    //    System.out.println(utc.toLocalDateTime());
 
     LocalDate birthDate = LocalDate.of(1986, Month.AUGUST, 4);
 
@@ -493,7 +500,5 @@ public class TimeTest {
     System.out.println(between.getYears());
     Period period = Period.ofWeeks(1);
     System.out.println(period);
-
-
   }
 }

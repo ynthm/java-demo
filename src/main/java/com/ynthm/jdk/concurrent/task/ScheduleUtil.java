@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 /** @author Ynthm Wang */
 public class ScheduleUtil {
+  private String cron;
   private static Map<String, ScheduledFuture<?>> taskMap = new HashMap<>();
   private static ScheduledExecutorService service =
       new ScheduledThreadPoolExecutor(

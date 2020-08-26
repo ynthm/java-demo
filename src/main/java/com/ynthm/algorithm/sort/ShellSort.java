@@ -16,4 +16,16 @@ public class ShellSort {
       }
     }
   }
+
+  public static void sort3(int[] a) {
+    int i, j, gap;
+    int n = a.length;
+    for (gap = n / 2; gap > 0; gap /= 2) {
+      for (i = gap; i < n; i++) {
+        for (j = i - gap; j >= 0 && a[j] > a[j + gap]; j -= gap) {
+          SortHelper.swap(a, j, j + gap);
+        }
+      }
+    }
+  }
 }

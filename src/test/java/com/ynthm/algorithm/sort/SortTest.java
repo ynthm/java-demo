@@ -35,6 +35,12 @@ class SortTest {
   }
 
   @Test
+  void testBubbleSort2() {
+    BubbleSort.sort2(arr);
+    Assertions.assertTrue(Arrays.equals(arr, sortedArr));
+  }
+
+  @Test
   void testBucketSort() {
     BucketSort.bucketSort(arr, 0, 9 + 1);
     Assertions.assertTrue(Arrays.equals(arr, sortedArr));
