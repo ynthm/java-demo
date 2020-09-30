@@ -2,6 +2,7 @@ package com.ynthm.jdk;
 
 import com.ynthm.tools.cmp.SplitIteratorThread;
 import com.ynthm.tools.domain.Author;
+import com.ynthm.tools.domain.Role;
 import com.ynthm.tools.domain.User;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
@@ -434,9 +435,34 @@ public class StreamTest {
         .forEach(System.out::println);
   }
 
+  private static User getUser() {
+    User user = new User();
+    user.setAge(new Random().nextInt(100));
+    return user;
+  }
+
   /** 自实现Supplier 构造海量测试数据 */
   @Test
   void generate1() {
+    List<User> collect =
+        Stream.generate(StreamTest::getUser).limit(10).collect(Collectors.toList());
+
+    Supplier<User> userSupplier =
+        () -> {
+          User user = new User();
+          user.setAge(new Random().nextInt(100));
+          return user;
+        };
+
+    Stream.generate(
+            () -> {
+              User user = new User();
+              user.setAge(new Random().nextInt(100));
+              return user;
+            })
+        .limit(100)
+        .forEach(System.out::println);
+
     Stream.generate(new UserSupplier())
         .limit(100)
         .forEach(p -> System.out.println(p.getName() + ":" + p.getAge()));
@@ -467,12 +493,32 @@ public class StreamTest {
 
   @Test
   void groupByAge() {
-    Map<Integer, List<User>> children =
-        Stream.generate(new UserSupplier())
-            .limit(100)
-            .collect(Collectors.groupingByConcurrent(User::getAge));
 
-    Iterator it = children.entrySet().iterator();
+    List<User> userList =
+        Stream.generate(new UserSupplier()).limit(100).collect(Collectors.toList());
+    Map<Integer, List<User>> collect =
+        userList.stream().collect(Collectors.groupingBy(User::getAge));
+
+    Map<Integer, List<User>> collect1 =
+        userList.stream()
+            .collect(Collectors.groupingBy(User::getAge, TreeMap::new, Collectors.toList()));
+
+    TreeMap<Integer, List<User>> collect3 =
+        userList.stream()
+            .sorted(Comparator.comparingLong(User::getBalance))
+            .collect(Collectors.groupingBy(User::getAge, TreeMap::new, Collectors.toList()));
+    // collectingAndThen先把流中的所有元素传递给第二个参数，然后把生成的集合传递给第一个参数来处理。
+    Stream<User> collect2 =
+        userList.stream()
+            .collect(
+                Collectors.collectingAndThen(
+                    Collectors.toList(),
+                    item -> {
+                      item.sort(Comparator.comparingLong(User::getBalance));
+                      return item.stream();
+                    }));
+
+    Iterator it = collect.entrySet().iterator();
     while (it.hasNext()) {
       Map.Entry<Integer, List<User>> users = (Map.Entry) it.next();
       System.out.println("Age: " + users.getKey() + "=" + users.getValue().size());
@@ -581,5 +627,12 @@ public class StreamTest {
     t0.start();
     t1.start();
     t2.start();
+  }
+
+  /** 多层嵌套访问 */
+  @Test
+  void optionalTest() {
+    User user = null;
+    Optional.ofNullable(user).map(User::getRole).map(Role::getType).ifPresent(a -> a = "ADMIN");
   }
 }

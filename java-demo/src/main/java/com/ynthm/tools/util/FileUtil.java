@@ -119,9 +119,7 @@ public class FileUtil {
    */
   public static byte[] toByteArray3(String filename) throws IOException {
 
-    FileChannel fc = null;
-    try {
-      fc = new RandomAccessFile(filename, "r").getChannel();
+    try (FileChannel fc = new RandomAccessFile(filename, "r").getChannel()) {
       MappedByteBuffer byteBuffer = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size()).load();
       System.out.println(byteBuffer.isLoaded());
       byte[] result = new byte[(int) fc.size()];
@@ -133,12 +131,6 @@ public class FileUtil {
     } catch (IOException e) {
       e.printStackTrace();
       throw e;
-    } finally {
-      try {
-        fc.close();
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
     }
   }
 }
