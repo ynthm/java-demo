@@ -59,6 +59,13 @@
             <version>3.3.0</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/cn.hutool/hutool-core -->
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-core</artifactId>
+            <version>5.7.2</version>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
         <dependency>
             <groupId>com.google.guava</groupId>
